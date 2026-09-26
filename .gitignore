@@ -1,0 +1,15 @@
+# user data (created at runtime next to the exe) - never publish these
+config.json
+themes/*
+!themes/aurora/
+imports/
+logs/
+assets/
+
+# build artifacts (releases carry the exe, not the repo)
+ZCodeSkin.exe
+release/
+*.zip
+
+# local tooling
+.zcode/

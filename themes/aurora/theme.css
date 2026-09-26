@@ -1,0 +1,12 @@
+/* Aurora - built-in ZCode Skin theme (authored for the ZCode DOM) */
+html[data-zc-skin="active"]{
+  --color-background:#0d1022;
+  --color-sidebar:#0d1022;
+  --color-panel:#141a33;
+  --color-header:#141a33;
+  --color-background-win-alt:#1a2140;
+  --color-primary:#7dd3fc;
+  --color-brand:#7dd3fc;
+  --color-accent:#a5b4fc;
+  --color-info:#67e8f9;
+}

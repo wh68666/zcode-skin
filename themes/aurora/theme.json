@@ -1,0 +1,11 @@
+{
+  "id": "aurora",
+  "name": "Aurora",
+  "version": "1.0.0",
+  "appearance": "dark",
+  "surfaceOpacity": 0.5,
+  "blurPx": 0,
+  "fit": "cover",
+  "position": "center",
+  "background": "background.jpg"
+}
