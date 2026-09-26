@@ -402,7 +402,7 @@ $annWork = {
     $ErrorActionPreference = 'Stop'
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-    $r = Invoke-WebRequest -Uri 'https://share.weiyun.com/8ptg57V2' -UserAgent $ua -UseBasicParsing -TimeoutSec 25
+    $r = Invoke-WebRequest -Uri 'https://share.weiyun.com/5NSFzCXr' -UserAgent $ua -UseBasicParsing -TimeoutSec 25
     $m = [regex]::Match($r.Content, 'window\.syncData\s*=\s*(\{[\s\S]*?\});\s*</script>')
     if (-not $m.Success) { throw 'syncData not found in share page' }
     $j = $m.Groups[1].Value | ConvertFrom-Json

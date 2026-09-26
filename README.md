@@ -46,8 +46,8 @@ ZCodeSkin\
 ZCodeSkin.exe   双击启动，常驻托盘；主窗口含两个标签页
 ```
 
-- **跑马灯公告**：主窗口顶部滚动显示微云分享笔记的内容（share.weiyun.com/8ptg57V2，
-  与 MonkeyCodeSkin 共用同一条公告，微云里改内容即生效）；启动时在线拉取，失败回退到
+- **跑马灯公告**：主窗口顶部滚动显示微云分享笔记的内容（share.weiyun.com/5NSFzCXr，
+  微云里改内容即生效）；启动时在线拉取，失败回退到
   logs\announcement.txt 缓存，之后每 30 分钟自动刷新
 - **语言切换**：右上角下拉框 English / 简体中文 / 繁體中文，切换后全界面立即更新；
   选择保存在 config.json 的 lang 字段，首次启动按系统语言自动选择
