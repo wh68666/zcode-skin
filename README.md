@@ -28,6 +28,8 @@ ZCodeSkin\
 
 发布包：仓库根目录 `build-release.ps1` 一键产出 `release\ZCodeSkin-v<版本>.zip`，
 内含 `ZCodeSkin.exe` + `skin-lib.ps1` + 本 README。**exe 必须与 skin-lib.ps1 同目录**（运行时读取）。
+发新版本：`build-release.ps1` 构建后跑 `publish-release.ps1`（读取 app 源码里的版本号，
+自动打 tag、创建 GitHub Release 并上传附件；更新检查即基于该 Release）。
 
 1. 解压到一个有写权限的独立目录（如 `D:\ZCodeSkin`），首次运行会在旁边生成
    config.json / themes\ / logs\ / assets\，这些是用户数据，升级时不要删
