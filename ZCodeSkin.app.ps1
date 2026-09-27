@@ -178,11 +178,17 @@ $applyDone = {
 
 # resolve ZCode exe for apply/restore: config -> running process -> scan;
 # last resort: file picker once, remembered in config. $null when still unknown.
+# Auto-detected paths are persisted too, so later runs keep working even when
+# ZCode is not running at that moment.
 function Resolve-ZcodeExeUi {
     $cfgExe = [string]$script:Cfg.appExe
     if ($cfgExe -and (Test-Path $cfgExe)) { return $cfgExe }
     $found = Resolve-ZcodeExe ''
-    if ($found) { return $found }
+    if ($found) {
+        $script:Cfg.appExe = $found
+        Save-Cfg
+        return $found
+    }
     try {
         $dlg = New-Object System.Windows.Forms.OpenFileDialog
         $dlg.Title = $L.pickTitle

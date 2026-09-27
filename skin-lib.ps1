@@ -64,7 +64,8 @@ function Start-ZcodeAppWithCdp {
 }
 
 # Locate the ZCode desktop exe on any machine: config choice -> running
-# process -> well-known folders -> registry uninstall entries. Returns $null if all fail.
+# process -> well-known folders -> registry uninstall entries -> fixed-drive
+# scan. Returns $null if all fail.
 function Resolve-ZcodeExe {
     param([string]$Configured, [string[]]$Roots = @('D:\PCSoftware\ZCode', 'D:\ZCode', 'C:\ZCode', "$env:LOCALAPPDATA\Programs", $env:ProgramFiles, ${env:ProgramFiles(x86)}))
     if ($Configured -and (Test-Path $Configured)) { return $Configured }
@@ -79,22 +80,46 @@ function Resolve-ZcodeExe {
             if ($hit) { return $hit.FullName }
         } catch { }
     }
+    # ZCode's installer (electron-builder NSIS) leaves InstallLocation EMPTY and
+    # points DisplayIcon at an .ico - derive the install dir from the directory
+    # of DisplayIcon / UninstallString instead, then look for ZCode.exe there.
     foreach ($k in @('HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
                      'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*',
                      'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*')) {
         try {
             $rows = Get-ItemProperty $k -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like '*ZCode*' }
             foreach ($row in $rows) {
-                $loc = if ($row.InstallLocation) { ([string]$row.InstallLocation).Trim('"').Trim() } else { $null }
-                if ($loc) {
-                    $cand = Join-Path $loc 'ZCode.exe'
-                    if (Test-Path $cand) { return $cand }
+                $dirs = @()
+                $loc = if ($row.InstallLocation) { ([string]$row.InstallLocation).Trim('"').Trim() } else { '' }
+                if ($loc) { $dirs += $loc }
+                foreach ($f in @($row.DisplayIcon, $row.UninstallString)) {
+                    if (-not $f) { continue }
+                    # strip quotes + any trailing arguments, keep the file path part
+                    $file = ([string]$f).Trim().Trim('"')
+                    $m = [regex]::Match($file, '^(.*?\.exe)', 'IgnoreCase')
+                    if ($m.Success) { $d = Split-Path -Parent $m.Groups[1].Value; if ($d) { $dirs += $d } }
                 }
-                $icon = if ($row.DisplayIcon) { ([string]$row.DisplayIcon).Trim('"') -replace ',\d+$', '' } else { $null }
-                if ($icon -and ($icon -like '*ZCode.exe') -and (Test-Path $icon)) { return $icon }
+                foreach ($d in ($dirs | Select-Object -Unique)) {
+                    if ($d -and (Test-Path $d)) {
+                        $cand = Join-Path $d 'ZCode.exe'
+                        if (Test-Path $cand) { return $cand }
+                        $cand2 = Join-Path $d 'ZCode\ZCode.exe'
+                        if (Test-Path $cand2) { return $cand2 }
+                    }
+                }
             }
         } catch { }
     }
+    # last resort: shallow scan of every fixed drive (custom install paths)
+    try {
+        $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -ne $null -and $_.Name.Length -eq 1 } | ForEach-Object { ($_.Name + ':\') }
+        foreach ($d in $drives) {
+            try {
+                $hit = Get-ChildItem $d -Filter 'ZCode.exe' -Recurse -Depth 3 -ErrorAction SilentlyContinue | Select-Object -First 1
+                if ($hit) { return $hit.FullName }
+            } catch { }
+        }
+    } catch { }
     return $null
 }
 
